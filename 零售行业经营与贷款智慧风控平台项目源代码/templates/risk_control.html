@@ -1,0 +1,312 @@
+{# ====================================================================
+    零售行业经营与贷款智慧风控平台 - 智慧风控页面
+    ====================================================================
+    
+    文件名：risk_control.html
+    功能：展示风险评估和风控建议
+    继承模板：base.html
+    访问权限：需要登录
+    
+    主要组成部分：
+    1. 风险统计卡片 - 高风险、中风险、低风险企业数量
+    2. 风险分布图表 - 饼图展示风险等级分布
+    3. 信用评分与贷款通过率图表 - 散点图展示关联性
+    4. 智能风控建议 - 基于数据分析的建议列表
+    5. 风险企业列表 - 前20条高风险企业详情
+    
+    风险等级划分：
+    - 高风险：信用评分 < 400
+    - 中风险：信用评分 400-699
+    - 低风险：信用评分 >= 700
+    
+    数据来源：
+    - charts_data: 图表数据和统计数据
+    - data: 风险企业列表（pandas DataFrame）
+    
+    作者：零售风控平台开发团队
+    版本：1.0
+#}
+
+{% extends "base.html" %}
+
+{% block title %}智慧风控 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- 页面标题 -->
+    <h2 class="mb-4">
+        <i class="fas fa-shield-alt me-2"></i>智慧风控
+    </h2>
+
+    {# ====================================================================
+        风险统计卡片区域
+        显示三个风险等级的企业数量，点击可查看详情
+     ==================================================================== #}
+    {% if charts_data %}
+    <div class="row g-4 mb-4">
+
+        {# 卡片1：高风险 #}
+        <div class="col-md-4">
+            <a href="{{ url_for('risk_detail_page', risk_level='高风险') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm" style="cursor: pointer;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-danger">高风险</h5>
+                        <h2 class="card-text">{{ charts_data.risk_distribution.high_risk }}</h2>
+                        <p class="text-muted">信用评分 < 400</p>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>点击查看详情
+                        </small>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {# 卡片2：中风险 #}
+        <div class="col-md-4">
+            <a href="{{ url_for('risk_detail_page', risk_level='中风险') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm" style="cursor: pointer;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-warning">中风险</h5>
+                        <h2 class="card-text">{{ charts_data.risk_distribution.medium_risk }}</h2>
+                        <p class="text-muted">信用评分 400-699</p>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>点击查看详情
+                        </small>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {# 卡片3：低风险 #}
+        <div class="col-md-4">
+            <a href="{{ url_for('risk_detail_page', risk_level='低风险') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm" style="cursor: pointer;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-success">低风险</h5>
+                        <h2 class="card-text">{{ charts_data.risk_distribution.low_risk }}</h2>
+                        <p class="text-muted">信用评分 >= 700</p>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>点击查看详情
+                        </small>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+    {# ====================================================================
+        图表区域
+        包含两个图表：风险等级分布、信用评分与贷款通过率
+     ==================================================================== #}
+    <div class="row g-4 mb-4">
+
+        {# 图表1：风险等级分布（饼图） #}
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>风险等级分布
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# 图表2：信用评分与贷款通过率（柱状图） #}
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>信用评分与贷款通过率
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <canvas id="loanChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {# ====================================================================
+        智能风控建议区域
+        显示基于数据分析的风控建议
+     ==================================================================== #}
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>智能风控建议
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if charts_data.suggestions %}
+                    <ul class="list-group list-group-flush">
+                        {% for suggestion in charts_data.suggestions %}
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>{{ suggestion }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">暂无建议</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">数据未加载，无法显示风控信息</div>
+    {% endif %}
+
+    {# ====================================================================
+        风险企业列表区域
+        显示前20条风险企业详情
+     ==================================================================== #}
+    {% if data is not none %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>风险企业列表（前20条）
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <!-- 数据表格 -->
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>行业名称</th>
+                                    <th>所在城市</th>
+                                    <th>信用评分</th>
+                                    <th>风险等级</th>
+                                    <th>是否通过贷款</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {# 遍历数据框的行 #}
+                                {% for index, row in data.iterrows() %}
+                                <tr>
+                                    <td>{{ row['行业名称'] }}</td>
+                                    <td>{{ row['所在城市'] }}</td>
+                                    <td>{{ row['企业信用评分'] }}</td>
+                                    <td>
+                                        {# 根据风险等级显示不同颜色的徽章 #}
+                                        {% if row['risk_level'] == '高风险' %}
+                                        <span class="badge bg-danger">{{ row['risk_level'] }}</span>
+                                        {% elif row['risk_level'] == '中风险' %}
+                                        <span class="badge bg-warning text-dark">{{ row['risk_level'] }}</span>
+                                        {% else %}
+                                        <span class="badge bg-success">{{ row['risk_level'] }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {# 显示是否通过贷款 #}
+                                        {% if row['是否通过贷款'] == 1 %}
+                                        <span class="badge bg-success">通过</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">未通过</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('company_detail_page', company_id=row['企业ID']) }}"
+                                           class="btn btn-sm btn-info text-white">
+                                            <i class="fas fa-eye"></i> 详情
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if charts_data %}
+<script>
+    {# ====================================================================
+        图表1：风险等级分布
+        类型：饼图
+        显示高风险、中风险、低风险的占比
+     ==================================================================== #}
+    const riskCtx = document.getElementById('riskChart').getContext('2d');
+    new Chart(riskCtx, {
+        type: 'pie',  // 饼图
+        data: {
+            labels: ['高风险', '中风险', '低风险'],
+            datasets: [{
+                data: [
+                    {{ charts_data.risk_distribution.high_risk }},
+                    {{ charts_data.risk_distribution.medium_risk }},
+                    {{ charts_data.risk_distribution.low_risk }}
+                ],
+                backgroundColor: [
+                    'rgba(220, 53, 69, 0.8)',   // 红色
+                    'rgba(255, 193, 7, 0.8)',  // 黄色
+                    'rgba(40, 167, 69, 0.8)'   // 绿色
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'  // 图例在右侧
+                }
+            }
+        }
+    });
+
+    {# ====================================================================
+        图表2：信用评分与贷款通过率
+        类型：柱状图
+        显示不同信用评分区间的贷款通过率
+     ==================================================================== #}
+    const loanCtx = document.getElementById('loanChart').getContext('2d');
+    new Chart(loanCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ charts_data.loan_pass_by_score|map(attribute='range')|list|tojson }},
+            datasets: [{
+                label: '贷款通过率 (%)',
+                data: {{ charts_data.loan_pass_by_score|map(attribute='pass_rate')|list|tojson }},
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100  // Y轴最大值为100%
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

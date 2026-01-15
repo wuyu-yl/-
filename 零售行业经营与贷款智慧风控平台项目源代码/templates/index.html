@@ -1,0 +1,265 @@
+{# ====================================================================
+    零售行业经营与贷款智慧风控平台 - 首页
+    ====================================================================
+    
+    文件名：index.html
+    功能：平台的首页，展示平台功能和特性，引导用户注册或登录
+    继承模板：base.html
+    访问权限：所有用户（包括未登录用户）
+    
+    主要组成部分：
+    1. 英雄区域（Hero Section）- 大标题和介绍文字
+    2. 功能卡片 - 展示平台的四大核心功能
+    3. 操作按钮 - 注册和登录入口
+    
+    设计特点：
+    - 渐变背景色（#667eea 到 #764ba2）
+    - 响应式布局（移动端优先）
+    - 卡片悬浮效果
+    - 优雅的按钮交互
+    
+    响应式断点：
+    - 移动端：≤ 576px
+    - 平板：768px - 991px
+    - 桌面：≥ 992px
+    
+    作者：零售风控平台开发团队
+    版本：1.0
+#}
+
+{# 继承base.html基础模板 #}
+{% extends "base.html" %}
+
+{# 覆盖页面标题块 #}
+{% block title %}首页 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{# ====================================================================
+    主要内容区域
+    包含英雄区域和功能卡片展示
+ ==================================================================== #}
+{% block content %}
+
+{# 英雄区域 #}
+<!-- 使用全屏渐变背景，突出显示平台介绍 -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center" style="min-height: 100vh;">
+            <!-- 左侧：标题和介绍文字（移动端显示在下方，桌面端显示在左侧） -->
+            <div class="col-lg-6 order-2 order-lg-1">
+                <!-- 主标题：两行显示，加粗，大字体 -->
+                <h1 class="display-4 fw-bold mb-4">
+                    零售行业经营与<br>贷款智慧风控平台
+                </h1>
+
+                <!-- 副标题：介绍平台功能 -->
+                <p class="lead mb-4">
+                    基于大数据分析的智能化风险评估系统，为零售企业提供全方位的经营分析服务
+                </p>
+
+                <!-- 操作按钮组：注册和登录 -->
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-start">
+                    <!-- 注册按钮：浅色背景，主色文字 -->
+                    <a href="{{ url_for('register') }}"
+                       class="btn btn-light btn-lg px-4 gap-3 text-primary fw-bold">
+                        <i class="fas fa-user-plus me-2"></i>立即注册
+                    </a>
+
+                    <!-- 登录按钮：渐变黄色背景，加粗文字 -->
+                    <a href="{{ url_for('login') }}"
+                       class="btn btn-warning btn-lg px-4 gap-3 fw-bold"
+                       style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); border: none;">
+                        <i class="fas fa-sign-in-alt me-2"></i>登录系统
+                    </a>
+                </div>
+            </div>
+
+            <!-- 右侧：功能卡片（移动端显示在上方，桌面端显示在右侧） -->
+            <div class="col-lg-6 order-1 order-lg-2">
+                <div class="feature-cards">
+                    <div class="row g-4">
+
+                        {# 功能卡片1：智慧风控 #}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <!-- 图标：蓝色，大尺寸 -->
+                                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                                    <h5>智慧风控</h5>
+                                    <p class="card-text text-muted">
+                                        多维度风险评估，智能预警系统
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# 功能卡片2：经营分析 #}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <!-- 图标：绿色，大尺寸 -->
+                                    <i class="fas fa-chart-pie fa-3x text-success mb-3"></i>
+                                    <h5>经营分析</h5>
+                                    <p class="card-text text-muted">
+                                        深度数据挖掘，洞察经营趋势
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# 功能卡片3：数据管理 #}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <!-- 图标：信息蓝，大尺寸 -->
+                                    <i class="fas fa-database fa-3x text-info mb-3"></i>
+                                    <h5>数据管理</h5>
+                                    <p class="card-text text-muted">
+                                        3000+企业数据，全面信息覆盖
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# 功能卡片4：实时监控 #}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <!-- 图标：警告黄，大尺寸 -->
+                                    <i class="fas fa-tachometer-alt fa-3x text-warning mb-3"></i>
+                                    <h5>实时监控</h5>
+                                    <p class="card-text text-muted">
+                                        动态数据更新，及时风险预警
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{# ====================================================================
+    额外CSS样式块
+    定义首页特有的样式
+ ==================================================================== #}
+{% block extra_css %}
+<style>
+    /* 英雄区域样式 */
+    .hero-section {
+        /* 紫色到紫色的渐变背景 */
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    /* 移动端响应式：调整内边距 */
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: auto;
+            padding: 3rem 0 2rem 0;
+        }
+    }
+
+    /* 平板响应式：调整内边距 */
+    @media (min-width: 769px) and (max-width: 991.98px) {
+        .hero-section {
+            min-height: auto;
+            padding: 4rem 0 3rem 0;
+        }
+    }
+
+    /* 桌面端响应式：全屏高度 */
+    @media (min-width: 992px) {
+        .hero-section {
+            min-height: 100vh;
+        }
+    }
+
+    /* 功能卡片样式 */
+    .feature-cards .card {
+        /* 半透明白色背景 */
+        background: rgba(255, 255, 255, 0.95);
+        /* 悬浮动画：0.3秒过渡 */
+        transition: transform 0.3s ease;
+    }
+
+    /* 卡片悬浮效果：向上移动 */
+    .feature-cards .card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* 登录按钮样式 */
+    .btn-warning {
+        /* 渐变背景：从黄色到橙色 */
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        border: none;
+        /* 过渡动画 */
+        transition: all 0.3s ease;
+        /* 阴影效果 */
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+    }
+
+    /* 登录按钮悬浮效果 */
+    .btn-warning:hover {
+        /* 渐变颜色变化 */
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        /* 向上移动 */
+        transform: translateY(-2px);
+        /* 阴影增强 */
+        box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6);
+    }
+
+    /* 登录按钮点击效果 */
+    .btn-warning:active {
+        /* 回到原位 */
+        transform: translateY(0);
+        /* 阴影减弱 */
+        box-shadow: 0 2px 10px rgba(255, 152, 0, 0.3);
+    }
+
+    /* 注册按钮样式 */
+    .btn-light {
+        /* 过渡动画 */
+        transition: all 0.3s ease;
+        /* 阴影效果 */
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    }
+
+    /* 注册按钮悬浮效果 */
+    .btn-light:hover {
+        /* 向上移动 */
+        transform: translateY(-2px);
+        /* 阴影增强 */
+        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.5);
+    }
+
+    /* 移动端优化：小屏幕样式调整 */
+    @media (max-width: 575.98px) {
+        /* 标题字体缩小 */
+        .display-4 {
+            font-size: 1.75rem !important;
+        }
+
+        /* 副标题字体缩小 */
+        .lead {
+            font-size: 1rem;
+        }
+
+        /* 标题底部间距 */
+        .hero-section h1 {
+            margin-bottom: 1rem;
+        }
+
+        /* 按钮尺寸缩小 */
+        .btn-lg {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}

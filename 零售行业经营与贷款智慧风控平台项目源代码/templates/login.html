@@ -1,0 +1,360 @@
+{# ====================================================================
+    零售行业经营与贷款智慧风控平台 - 登录页面
+    ====================================================================
+    
+    文件名：login.html
+    功能：用户登录页面，提供用户名/密码登录功能
+    继承模板：base.html
+    访问权限：所有用户（包括未登录用户）
+    
+    主要组成部分：
+    1. 登录表单 - 用户名、密码输入框
+    2. 记住我选项 - 勾选框
+    3. 登录按钮 - 提交表单
+    4. Flash消息 - 显示登录成功/失败提示
+    5. 测试账号提示 - 方便测试
+    
+    前端验证：
+    1. 用户名不能为空
+    2. 密码不能为空
+    3. 实时验证反馈
+    
+    安全特性：
+    1. POST方式提交（防止密码出现在URL中）
+    2. required属性（HTML5验证）
+    3. minlength验证
+    
+    测试账号：
+    - 用户名：admin
+    - 密码：admin123
+    
+    作者：零售风控平台开发团队
+    版本：1.0
+#}
+
+{# 继承base.html基础模板 #}
+{% extends "base.html" %}
+
+{# 覆盖页面标题块 #}
+{% block title %}登录 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{# ====================================================================
+    主要内容区域
+ ==================================================================== #}
+{% block content %}
+
+{# 隐藏base.html中的flash消息，我们在登录页面单独显示 #}
+<style>
+.login-container ~ .container[mt-3] {
+    display: none !important;
+}
+</style>
+
+{# 自定义登录页面样式 #}
+<style>
+/* 登录容器样式：全屏居中 */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 渐变背景：紫色系 */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 0;
+    overflow-x: hidden;
+}
+
+/* 移动端响应式 */
+@media (max-width: 768px) {
+    .login-container {
+        min-height: auto;
+        padding: 2rem 0;
+    }
+}
+
+/* 平板响应式 */
+@media (min-width: 769px) and (max-width: 991.98px) {
+    .login-container {
+        min-height: auto;
+        padding: 3rem 0;
+    }
+}
+
+/* 桌面端响应式 */
+@media (min-width: 992px) {
+    .login-container {
+        min-height: 100vh;
+    }
+}
+
+/* 登录卡片样式 */
+.login-card {
+    border: none;
+    /* 圆角 */
+    border-radius: 1rem;
+    /* 阴影效果 */
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* 登录按钮样式 */
+.login-btn {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.875rem 1.5rem;
+    /* 渐变背景 */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 0.5rem;
+    /* 过渡动画 */
+    transition: all 0.3s ease;
+    /* 阴影效果 */
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* 登录按钮悬浮效果 */
+.login-btn:hover {
+    /* 向上移动 */
+    transform: translateY(-2px);
+    /* 阴影增强 */
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    /* 颜色加深 */
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+}
+
+/* 登录按钮点击效果 */
+.login-btn:active {
+    /* 回到原位 */
+    transform: translateY(0);
+}
+
+/* 输入框组前缀图标样式 */
+.input-group-text {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* 输入框聚焦样式 */
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+</style>
+
+{# 登录页面主体 #}
+<div class="login-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- 列宽：中等屏幕占6列，大屏幕占5列 -->
+            <div class="col-md-6 col-lg-5">
+                <!-- 登录卡片 -->
+                <div class="card login-card">
+                    <div class="card-body p-5">
+                        <!-- 标题区域 -->
+                        <div class="text-center mb-4">
+                            <!-- Logo图标：渐变色 -->
+                            <i class="fas fa-chart-line fa-4x mb-3"
+                               style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            </i>
+                            <h3 style="color: #333; font-weight: 700;">用户登录</h3>
+                            <p class="text-muted">欢迎回来，请登录您的账户</p>
+                        </div>
+
+                        {# ====================================================================
+                            Flash消息区域
+                            显示服务器返回的登录结果消息
+                         ==================================================================== #}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <!-- alert组件：显示消息 -->
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show mb-3" role="alert">
+                                        <!-- 根据category显示不同的图标 -->
+                                        <i class="fas fa-{% if category == 'danger' %}exclamation-circle{% elif category == 'success' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
+                                        {{ message }}
+                                        <!-- 关闭按钮 -->
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        {# ====================================================================
+                            测试账号提示
+                            方便测试人员快速登录
+                         ==================================================================== #}
+                        <div class="alert alert-info mb-3" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>测试账号：</strong>admin / admin123
+                        </div>
+
+                        {# ====================================================================
+                            登录表单
+                            POST方式提交到/login路由
+                         ==================================================================== #}
+                        <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+
+                            <!-- 用户名输入框 -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-bold">用户名</label>
+                                <div class="input-group">
+                                    <!-- 用户图标 -->
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user text-primary"></i>
+                                    </span>
+                                    <!-- 文本输入框：required表示必填 -->
+                                    <input type="text" class="form-control form-control-lg"
+                                           id="username" name="username" required
+                                           placeholder="请输入用户名">
+                                </div>
+                            </div>
+
+                            <!-- 密码输入框 -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label fw-bold">密码</label>
+                                <div class="input-group">
+                                    <!-- 锁图标 -->
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock text-primary"></i>
+                                    </span>
+                                    <!-- 密码输入框：type="password"隐藏输入内容 -->
+                                    <input type="password" class="form-control form-control-lg"
+                                           id="password" name="password" required
+                                           placeholder="请输入密码">
+                                </div>
+                            </div>
+
+                            <!-- 记住我复选框 -->
+                            <div class="mb-4 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                                <label class="form-check-label" for="remember">记住我</label>
+                            </div>
+
+                            <!-- 登录按钮 -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn login-btn text-white" id="loginBtn">
+                                    <i class="fas fa-sign-in-alt me-2"></i>立即登录
+                                </button>
+                            </div>
+
+                        </form>
+
+                        <!-- 底部链接 -->
+                        <div class="text-center mt-4">
+                            <!-- 注册链接 -->
+                            <p class="mb-2">还没有账户？
+                                <a href="{{ url_for('register') }}"
+                                   class="text-decoration-none fw-bold"
+                                   style="color: #667eea;">
+                                    立即注册
+                                </a>
+                            </p>
+                            <!-- 返回首页链接 -->
+                            <a href="{{ url_for('index') }}"
+                               class="text-muted text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i>返回首页
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ====================================================================
+    前端JavaScript逻辑
+    处理表单验证和交互
+ ==================================================================== #}
+<script>
+// 等待DOM加载完成
+document.addEventListener('DOMContentLoaded', function() {
+    // 获取DOM元素
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    // ====================================================================
+    // 表单提交事件处理
+    // ====================================================================
+    loginForm.addEventListener('submit', function(e) {
+        // 获取输入值
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        // 验证用户名
+        if (!username) {
+            e.preventDefault();  // 阻止表单提交
+            showFlashMessage('请输入用户名', 'warning');
+            usernameInput.focus();  // 聚焦到用户名输入框
+            return;
+        }
+
+        // 验证密码
+        if (!password) {
+            e.preventDefault();  // 阻止表单提交
+            showFlashMessage('请输入密码', 'warning');
+            passwordInput.focus();  // 聚焦到密码输入框
+            return;
+        }
+
+        // 显示加载状态
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>登录中...';
+
+        // 注意：不阻止表单提交，让它正常提交到服务器
+    });
+
+    // ====================================================================
+    // 显示Flash消息函数
+    // 动态创建alert组件显示消息
+    // ====================================================================
+    function showFlashMessage(message, category = 'info') {
+        // 先移除所有已存在的Flash消息（避免重复显示）
+        const existingAlerts = loginForm.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => alert.remove());
+
+        // 创建新的Flash消息
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${category} alert-dismissible fade show mb-3`;
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            <i class="fas fa-${getAlertIcon(category)} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        // 插入到表单之前（测试账号提示之后）
+        const testAccountAlert = loginForm.querySelector('.alert-info');
+        if (testAccountAlert) {
+            testAccountAlert.after(alertDiv);
+        } else {
+            loginForm.before(alertDiv);
+        }
+
+        // 5秒后自动关闭消息
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 150);  // 等待淡出动画完成
+        }, 5000);
+    }
+
+    // ====================================================================
+    // 获取警告图标
+    // 根据消息类型返回对应的Font Awesome图标
+    // ====================================================================
+    function getAlertIcon(category) {
+        switch(category) {
+            case 'danger':
+                return 'exclamation-circle';  // 红色感叹号
+            case 'success':
+                return 'check-circle';        // 绿色勾号
+            case 'warning':
+                return 'exclamation-triangle'; // 黄色三角
+            default:
+                return 'info-circle';         // 蓝色信息
+        }
+    }
+});
+</script>
+{% endblock %}

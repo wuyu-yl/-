@@ -1,0 +1,250 @@
+{# ====================================================================
+    零售行业经营与贷款智慧风控平台 - 注册页面
+    ====================================================================
+    
+    文件名：register.html
+    功能：用户注册页面，创建新账户
+    继承模板：base.html
+    访问权限：所有用户（包括未登录用户）
+    
+    主要组成部分：
+    1. 注册表单 - 用户名、邮箱、密码、确认密码
+    2. 输入验证 - 必填项、密码长度
+    3. 注册按钮 - 提交表单
+    4. 底部链接 - 跳转登录和首页
+    
+    表单字段：
+    - username: 用户名（必填）
+    - email: 邮箱地址（必填，格式验证）
+    - password: 密码（必填，最少6位）
+    - confirm_password: 确认密码（必填，最少6位，需与密码一致）
+    
+    安全特性：
+    1. POST方式提交
+    2. required属性（HTML5验证）
+    3. minlength验证（密码至少6位）
+    4. email类型（邮箱格式验证）
+    
+    服务器端验证（由Flask处理）：
+    - 用户名唯一性
+    - 邮箱唯一性
+    - 密码一致性
+    - 密码强度
+    
+    作者：零售风控平台开发团队
+    版本：1.0
+#}
+
+{# 继承base.html基础模板 #}
+{% extends "base.html" %}
+
+{# 覆盖页面标题块 #}
+{% block title %}注册 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{# ====================================================================
+    主要内容区域
+ ==================================================================== #}
+{% block content %}
+
+{# 自定义注册页面样式 #}
+<style>
+/* 注册容器样式：全屏居中 */
+.register-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 渐变背景：紫色系 */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 0;
+    overflow-x: hidden;
+}
+
+/* 移动端响应式 */
+@media (max-width: 768px) {
+    .register-container {
+        min-height: auto;
+        padding: 2rem 0;
+    }
+}
+
+/* 平板响应式 */
+@media (min-width: 769px) and (max-width: 991.98px) {
+    .register-container {
+        min-height: auto;
+        padding: 3rem 0;
+    }
+}
+
+/* 桌面端响应式 */
+@media (min-width: 992px) {
+    .register-container {
+        min-height: 100vh;
+    }
+}
+
+/* 注册卡片样式 */
+.register-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* 注册按钮样式 */
+.register-btn {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.875rem 1.5rem;
+    /* 渐变背景 */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 0.5rem;
+    /* 过渡动画 */
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* 注册按钮悬浮效果 */
+.register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+}
+
+/* 注册按钮点击效果 */
+.register-btn:active {
+    transform: translateY(0);
+}
+
+/* 输入框组前缀图标样式 */
+.input-group-text {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* 输入框聚焦样式 */
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+</style>
+
+{# 注册页面主体 #}
+<div class="register-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- 列宽：中等屏幕占6列，大屏幕占5列 -->
+            <div class="col-md-6 col-lg-5">
+                <!-- 注册卡片 -->
+                <div class="card register-card">
+                    <div class="card-body p-5">
+                        <!-- 标题区域 -->
+                        <div class="text-center mb-4">
+                            <!-- Logo图标：渐变色 -->
+                            <i class="fas fa-chart-line fa-4x mb-3"
+                               style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            </i>
+                            <h3 style="color: #333; font-weight: 700;">用户注册</h3>
+                            <p class="text-muted">创建新账户，开启智慧风控之旅</p>
+                        </div>
+
+                        {# ====================================================================
+                            注册表单
+                            POST方式提交到/register路由
+                         ==================================================================== #}
+                        <form method="POST" action="{{ url_for('register') }}">
+
+                            <!-- 用户名输入框 -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-bold">用户名</label>
+                                <div class="input-group">
+                                    <!-- 用户图标 -->
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user text-primary"></i>
+                                    </span>
+                                    <!-- 文本输入框：required表示必填 -->
+                                    <input type="text" class="form-control form-control-lg"
+                                           id="username" name="username" required
+                                           placeholder="请输入用户名">
+                                </div>
+                            </div>
+
+                            <!-- 邮箱输入框 -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label fw-bold">邮箱</label>
+                                <div class="input-group">
+                                    <!-- 邮箱图标 -->
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope text-primary"></i>
+                                    </span>
+                                    <!-- 邮箱输入框：type="email"自动验证格式，required表示必填 -->
+                                    <input type="email" class="form-control form-control-lg"
+                                           id="email" name="email" required
+                                           placeholder="请输入邮箱地址">
+                                </div>
+                            </div>
+
+                            <!-- 密码输入框 -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label fw-bold">密码</label>
+                                <div class="input-group">
+                                    <!-- 锁图标 -->
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock text-primary"></i>
+                                    </span>
+                                    <!-- 密码输入框：type="password"隐藏输入内容 -->
+                                    <!-- minlength="6"：最少6位 -->
+                                    <input type="password" class="form-control form-control-lg"
+                                           id="password" name="password" required minlength="6"
+                                           placeholder="请输入密码（至少6位）">
+                                </div>
+                            </div>
+
+                            <!-- 确认密码输入框 -->
+                            <div class="mb-4">
+                                <label for="confirm_password" class="form-label fw-bold">确认密码</label>
+                                <div class="input-group">
+                                    <!-- 锁图标 -->
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock text-primary"></i>
+                                    </span>
+                                    <!-- 确认密码输入框 -->
+                                    <!-- minlength="6"：最少6位 -->
+                                    <input type="password" class="form-control form-control-lg"
+                                           id="confirm_password" name="confirm_password" required minlength="6"
+                                           placeholder="请再次输入密码">
+                                </div>
+                            </div>
+
+                            <!-- 注册按钮 -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn register-btn text-white">
+                                    <i class="fas fa-user-plus me-2"></i>立即注册
+                                </button>
+                            </div>
+
+                        </form>
+
+                        <!-- 底部链接 -->
+                        <div class="text-center mt-4">
+                            <!-- 登录链接 -->
+                            <p class="mb-2">已有账户？
+                                <a href="{{ url_for('login') }}"
+                                   class="text-decoration-none fw-bold"
+                                   style="color: #667eea;">
+                                    立即登录
+                                </a>
+                            </p>
+                            <!-- 返回首页链接 -->
+                            <a href="{{ url_for('index') }}"
+                               class="text-muted text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i>返回首页
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

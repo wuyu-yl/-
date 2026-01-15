@@ -1,0 +1,204 @@
+{# 企业详情页面 - 展示单个企业的完整信息 #}
+{% extends "base.html" %}
+{% block title %}企业详情 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-building me-2"></i>企业详情</h2>
+        <a href="{{ url_for('data_detail') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>返回列表
+        </a>
+    </div>
+
+    <!-- 企业基本信息卡片 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>基本信息</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">企业ID</label>
+                        <p class="form-control-static">{{ company['企业ID'] }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">行业名称</label>
+                        <p class="form-control-static">{{ company['行业名称'] }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">所在城市</label>
+                        <p class="form-control-static">{{ company['所在城市'] }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">城市等级</label>
+                        <p class="form-control-static">{{ company['城市等级'] }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">零售品类</label>
+                        <p class="form-control-static">{{ company['零售品类'] }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 风险评估卡片 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-{{ risk_color }} text-white">
+            <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>风险评估</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">企业信用评分</label>
+                        <p class="form-control-static">{{ company['企业信用评分'] }}</p>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-{{ risk_color }}" role="progressbar"
+                                 style="width: {{ (company['企业信用评分'] / 1000 * 100)|int }}%"
+                                 aria-valuenow="{{ company['企业信用评分'] }}"
+                                 aria-valuemin="0" aria-valuemax="1000">
+                                {{ (company['企业信用评分'] / 1000 * 100)|int }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">风险等级</label>
+                        <p class="form-control-static">
+                            <span class="badge bg-{{ risk_color }} fs-6">{{ risk_level }}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">是否通过贷款</label>
+                        <p class="form-control-static">
+                            {% if company['是否通过贷款'] == '通过' or company['是否通过贷款'] == 1 %}
+                            <span class="badge bg-success">通过</span>
+                            {% else %}
+                            <span class="badge bg-secondary">未通过</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 经营数据卡片 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>经营数据</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">月均营收</label>
+                        <p class="form-control-static">{{ company['月均营收（万元）'] }} 万元</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">月均成本</label>
+                        <p class="form-control-static">{{ company['月均成本（万元）'] }} 万元</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">月均利润</label>
+                        <p class="form-control-static">{{ company.get('利润(万元)', (company['月均营收（万元）'] - company['月均成本（万元）'])|round(2)) }} 万元</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">经营年限</label>
+                        <p class="form-control-static">{{ company.get('经营年限', company.get('经营年份', 'N/A')) }} 年</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">员工人数</label>
+                        <p class="form-control-static">{{ company['员工人数'] }} 人</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">月均客流量</label>
+                        <p class="form-control-static">{{ company['月均客流量（人）'] }} 人</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 计算指标卡片 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>计算指标</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">利润率</label>
+                        <p class="form-control-static">{{ company.get('利润率(%)', 0)|round(2) }}%</p>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width: {{ [company.get('利润率(%)', 0), 100]|min }}%"
+                                 aria-valuenow="{{ company.get('利润率(%)', 0) }}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ company.get('利润率(%)', 0)|round(1) }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">人均月营收</label>
+                        <p class="form-control-static">{{ company.get('人均月营收(万元)', 0)|round(2) }} 万元</p>
+                        <small class="text-muted">每位员工平均月创造营收</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 智能建议卡片 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>智能建议</h5>
+        </div>
+        <div class="card-body">
+            {% if risk_level == '高风险' %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                该企业信用评分较低，存在较高风险。建议加强审核，关注其经营稳定性和现金流状况。
+            </div>
+            {% elif risk_level == '中风险' %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                该企业信用评分中等，存在一定风险。建议仔细评估其经营状况和还款能力。
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                该企业信用评分较高，风险较低。可以优先考虑其贷款申请。
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,220 @@
+{# ====================================================================
+    零售行业经营与贷款智慧风控平台 - 基础模板
+    ====================================================================
+    
+    文件名：base.html
+    功能：所有页面的基础布局模板，包含公共头部、导航栏、页脚等
+    继承关系：其他所有页面模板都继承此模板
+    
+    主要组成部分：
+    1. <head> - HTML头部，包含meta标签、CSS引用等
+    2. <nav> - 导航栏（仅登录用户可见）
+    3. Flash消息 - 系统提示消息区域
+    4. {% block content %} - 主要内容区域，子模板覆盖
+    5. <footer> - 页脚区域
+    6. JavaScript引用 - 公共脚本引用
+    
+    技术栈：
+    - Jinja2模板引擎
+    - Bootstrap 5.3.0 - UI框架
+    - Font Awesome 6.4.0 - 图标库
+    - Chart.js 4.4.0 - 图表库
+    
+    可重写块（block）：
+    - title - 页面标题
+    - extra_css - 额外CSS样式
+    - content - 页面主要内容
+    - extra_js - 额外JavaScript代码
+    
+    作者：零售风控平台开发团队
+    版本：1.0
+#}
+
+<!DOCTYPE html>
+<!-- 设置HTML文档类型 -->
+<html lang="zh-CN">
+<head>
+    <!-- 字符编码设置：UTF-8，支持中文显示 -->
+    <meta charset="UTF-8">
+
+    <!-- 视口设置：响应式设计，适配移动设备 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=0.8, user-scalable=yes">
+
+    <!-- IE浏览器兼容性设置 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- 页面描述：SEO优化 -->
+    <meta name="description" content="零售行业经营与贷款智慧风控平台 - 基于大数据分析的智能化风险评估系统">
+
+    <!-- 页面标题：子模板可覆盖 -->
+    <title>{% block title %}零售行业经营与贷款智慧风控平台{% endblock %}</title>
+
+    <!-- Bootstrap 5.3.0 CSS框架CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome 6.4.0 图标库CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- 自定义CSS样式 -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <!-- 子模板可插入额外的CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {# ====================================================================
+        导航栏
+        仅在用户登录后显示，未登录用户不显示导航栏
+        使用Bootstrap的navbar组件实现响应式导航
+    ==================================================================== #}
+    {% if current_user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <!-- 品牌Logo和名称 -->
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-chart-line me-2"></i>智慧风控平台
+            </a>
+
+            <!-- 移动端汉堡菜单按钮 -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- 导航链接 -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- 左侧导航菜单 -->
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-1"></i>仪表板
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('risk_control') }}">
+                            <i class="fas fa-shield-alt me-1"></i>智慧风控
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('business_analysis') }}">
+                            <i class="fas fa-chart-pie me-1"></i>经营分析
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('data_detail') }}">
+                            <i class="fas fa-database me-1"></i>数据管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('prediction') }}">
+                            <i class="fas fa-robot me-1"></i>数据预测
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- 右侧用户菜单 -->
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <!-- 用户名下拉菜单触发器 -->
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ current_user.username }}
+                        </a>
+
+                        <!-- 下拉菜单内容 -->
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('profile') }}">
+                                    <i class="fas fa-user-edit me-2"></i>个人资料
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('upload_data') }}">
+                                    <i class="fas fa-upload me-2"></i>数据上传
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('operation_logs') }}">
+                                    <i class="fas fa-history me-2"></i>操作日志
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('settings') }}">
+                                    <i class="fas fa-cog me-2"></i>系统设置
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>退出登录
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    {# ====================================================================
+        Flash消息区域
+        显示服务器返回的临时消息（成功、错误、警告等）
+        使用Flask的get_flashed_messages()函数获取消息
+        消息自动带有关闭按钮
+    ==================================================================== #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <!-- 动态生成alert组件 -->
+                    <!-- category: success/danger/warning/info -->
+                    <!-- message: 消息内容 -->
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {# ====================================================================
+        主要内容区域
+        子模板通过{% block content %}覆盖此区域
+        这是每个页面的核心内容区域
+    ==================================================================== #}
+    {% block content %}{% endblock %}
+
+    {# ====================================================================
+        页脚区域
+        显示版权信息
+        使用Bootstrap的footer样式
+    ==================================================================== #}
+    <footer class="footer mt-5 py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">&copy; 2025 零售行业经营与贷款智慧风控平台. 仅供学习和研究使用.</span>
+        </div>
+    </footer>
+
+    {# ====================================================================
+        JavaScript引用区域
+        所有页面的公共脚本
+        子模板可通过{% block extra_js %}添加额外脚本
+    ==================================================================== #}
+
+    <!-- Bootstrap 5.3.0 JavaScript Bundle -->
+    <!-- 包含所有Bootstrap插件（Tooltip、Popover、Modal等） -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Chart.js 4.4.0 图表库 -->
+    <!-- 用于数据可视化（柱状图、饼图、折线图等） -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- 自定义JavaScript -->
+    <!-- 包含全局工具函数、UI交互、数据处理等 -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- 子模板可插入额外的JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

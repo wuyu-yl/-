@@ -1,0 +1,218 @@
+{# 数据上传页面 - 上传CSV格式的数据文件到系统 #}
+{% extends "base.html" %}
+{% block title %}数据上传 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-upload me-2"></i>数据上传</h2>
+
+    <!-- 上传说明卡片：说明CSV文件的格式要求 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>上传说明</h5>
+        </div>
+        <div class="card-body">
+            <p>请上传符合以下要求的CSV格式数据文件：</p>
+            <ul class="mb-0">
+                <li>文件格式：CSV（逗号分隔值）</li>
+                <li>文件大小：不超过 50MB</li>
+                <li>编码格式：UTF-8</li>
+                <li>必须包含以下字段：
+                    <code>企业ID,行业名称,经营年份,注册金额（万元）,所在城市,城市等级,企业信用评分,月均营收（万元）,月均成本（万元）,员工人数,是否通过贷款,零售品类,门店面积（㎡）,月均客流量（人）</code>
+                </li>
+                <li>城市等级可选值：<code>一线城市</code>, <code>二线城市</code>, <code>三线城市</code>, <code>三线及以下</code></li>
+                <li>零售品类可选值：<code>服饰零售</code>, <code>生鲜零售</code>, <code>家电零售</code>, <code>综合商超</code>, <code>文具零售</code></li>
+                <li>贷款状态可选值：<code>通过</code>, <code>拒绝</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 上传表单卡片 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-cloud-upload-alt me-2"></i>上传数据文件</h5>
+        </div>
+        <div class="card-body">
+            <!-- enctype="multipart/form-data" 必需，用于文件上传 -->
+            <form method="POST" action="{{ url_for('upload_data') }}" enctype="multipart/form-data" id="uploadForm">
+                <div class="mb-4">
+                    <label for="file" class="form-label fw-bold">选择文件</label>
+                    <input type="file" class="form-control form-control-lg" id="file" name="file"
+                           accept=".csv" required>
+                    <div class="form-text">支持 .csv 格式文件，最大 50MB</div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check">
+                        <!-- 覆盖现有数据选项：勾选后将删除当前数据库的所有数据 -->
+                        <input class="form-check-input" type="checkbox" id="overwrite" name="overwrite">
+                        <label class="form-check-label" for="overwrite">
+                            <strong>覆盖现有数据</strong>（注意：此操作将替换当前数据库中的所有数据，请谨慎操作！）
+                        </label>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <button type="submit" class="btn btn-primary btn-lg" id="uploadBtn">
+                        <i class="fas fa-upload me-2"></i>开始上传
+                    </button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-times me-2"></i>取消
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 上传历史：显示之前上传的文件记录 -->
+    {% if upload_history %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-history me-2"></i>上传历史</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>文件名</th>
+                            <th>记录数</th>
+                            <th>上传时间</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in upload_history %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ record.filename }}</td>
+                            <td>{{ record.record_count }}</td>
+                            <td>{{ record.upload_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>
+                                {% if record.status == 'success' %}
+                                    <span class="badge bg-success">成功</span>
+                                {% elif record.status == 'error' %}
+                                    <span class="badge bg-danger">失败</span>
+                                {% else %}
+                                    <span class="badge bg-warning">处理中</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-preview {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    #uploadBtn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .progress-container {
+        display: none;
+        margin-top: 1rem;
+    }
+
+    .progress-container.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('file');
+    const overwriteCheckbox = document.getElementById('overwrite');
+
+    // 文件选择后显示文件信息
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // 验证文件大小（50MB限制）
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            if (file.size > maxSize) {
+                e.target.value = '';
+                alert('文件大小超过 50MB 限制，请选择较小的文件。');
+                return;
+            }
+
+            // 验证文件类型
+            if (!file.name.endsWith('.csv')) {
+                e.target.value = '';
+                alert('仅支持 CSV 格式文件。');
+                return;
+            }
+
+            // 显示文件信息
+            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+            const fileDate = new Date(file.lastModified).toLocaleString('zh-CN');
+
+            // 在文件输入框后显示文件信息
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'alert alert-info mt-2';
+            fileInfo.innerHTML = `
+                <i class="fas fa-file-csv me-2"></i>
+                <strong>文件信息：</strong>
+                <ul class="mb-0 mt-2">
+                    <li>文件名：${file.name}</li>
+                    <li>文件大小：${fileSize} MB</li>
+                    <li>修改时间：${fileDate}</li>
+                </ul>
+            `;
+
+            // 移除旧的文件信息
+            const oldFileInfo = fileInput.parentElement.querySelector('.alert');
+            if (oldFileInfo) {
+                oldFileInfo.remove();
+            }
+
+            fileInput.parentElement.appendChild(fileInfo);
+        }
+    });
+
+    // 覆盖复选框警告
+    overwriteCheckbox.addEventListener('change', function(e) {
+        if (this.checked) {
+            const confirmed = confirm(
+                '警告：勾选"覆盖现有数据"将删除数据库中的所有现有数据！\n\n' +
+                '此操作不可逆，请确认是否继续。'
+            );
+            if (!confirmed) {
+                this.checked = false;
+            }
+        }
+    });
+
+    // 表单提交时显示加载状态
+    uploadForm.addEventListener('submit', function(e) {
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>上传中...';
+    });
+});
+</script>
+{% endblock %}

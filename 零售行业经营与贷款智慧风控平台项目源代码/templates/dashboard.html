@@ -1,0 +1,374 @@
+{# ====================================================================
+    零售行业经营与贷款智慧风控平台 - 仪表板页面
+    ====================================================================
+    
+    文件名：dashboard.html
+    功能：系统主仪表板，展示全局统计数据和图表
+    继承模板：base.html
+    访问权限：需要登录
+    
+    主要组成部分：
+    1. 统计卡片 - 4个关键指标（企业总数、贷款通过率、平均信用评分、月均营收）
+    2. 图表区域 - 城市分布、品类分布、信用评分分布
+    3. 快速操作 - 快速访问系统各个功能模块
+    
+    数据来源：
+    - stats: 统计数据字典（从后端传入）
+    - charts_data: 图表数据字典（从后端传入）
+    
+    图表类型：
+    - cityChart: 柱状图 - 城市等级分布
+    - categoryChart: 环形图 - 零售品类分布
+    - creditChart: 折线图 - 信用评分分布
+    
+    交互功能：
+    - 点击统计卡片可跳转到详情页面
+    - 图表支持悬停查看详细数据
+    - 快速操作按钮直接跳转到各功能模块
+    
+    作者：零售风控平台开发团队
+    版本：1.0
+#}
+
+{# 继承base.html基础模板 #}
+{% extends "base.html" %}
+
+{# 覆盖页面标题块 #}
+{% block title %}仪表板 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{# ====================================================================
+    主要内容区域
+ ==================================================================== #}
+{% block content %}
+
+<div class="container mt-4">
+    <!-- 页面标题 -->
+    <h2 class="mb-4">
+        <i class="fas fa-tachometer-alt me-2"></i>仪表板
+    </h2>
+
+    {# ====================================================================
+        统计卡片区域
+        显示4个关键指标，点击可查看详情
+     ==================================================================== #}
+    {% if stats %}
+    <div class="row g-4 mb-4">
+
+        {# 卡片1：企业总数 #}
+        <div class="col-md-3">
+            <a href="{{ url_for('dashboard_detail_page', stat_type='total_companies') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm bg-primary text-white" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">企业总数</h6>
+                        <h2 class="card-title mb-0">{{ stats.total_companies }}</h2>
+                        <small><i class="fas fa-building me-1"></i>家</small>
+                        <div class="mt-2">
+                            <small class="opacity-75">
+                                <i class="fas fa-info-circle me-1"></i>点击查看详情
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {# 卡片2：贷款通过率 #}
+        <div class="col-md-3">
+            <a href="{{ url_for('dashboard_detail_page', stat_type='loan_pass_rate') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm bg-success text-white" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">贷款通过率</h6>
+                        <!-- 使用round过滤器保留2位小数 -->
+                        <h2 class="card-title mb-0">{{ stats.loan_pass_rate|round(2) }}%</h2>
+                        <small><i class="fas fa-check-circle me-1"></i>总体通过率</small>
+                        <div class="mt-2">
+                            <small class="opacity-75">
+                                <i class="fas fa-info-circle me-1"></i>点击查看详情
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {# 卡片3：平均信用评分 #}
+        <div class="col-md-3">
+            <a href="{{ url_for('dashboard_detail_page', stat_type='avg_credit_score') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm bg-info text-white" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">平均信用评分</h6>
+                        <h2 class="card-title mb-0">{{ stats.avg_credit_score|round(2) }}</h2>
+                        <small><i class="fas fa-star me-1"></i>满分1000</small>
+                        <div class="mt-2">
+                            <small class="opacity-75">
+                                <i class="fas fa-info-circle me-1"></i>点击查看详情
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {# 卡片4：月均营收 #}
+        <div class="col-md-3">
+            <a href="{{ url_for('dashboard_detail_page', stat_type='avg_monthly_revenue') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm bg-warning text-white" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">月均营收</h6>
+                        <h2 class="card-title mb-0">{{ stats.avg_monthly_revenue|round(2) }}</h2>
+                        <small><i class="fas fa-dollar-sign me-1"></i>万元</small>
+                        <div class="mt-2">
+                            <small class="opacity-75">
+                                <i class="fas fa-info-circle me-1"></i>点击查看详情
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+    {% else %}
+    <!-- 如果数据未加载，显示警告 -->
+    <div class="alert alert-warning">数据未加载，无法显示统计信息</div>
+    {% endif %}
+
+    {# ====================================================================
+        图表区域第一行
+        包含两个图表：城市分布、品类分布
+     ==================================================================== #}
+    {% if charts_data %}
+    <div class="row g-4 mb-4">
+
+        {# 图表1：城市等级分布（柱状图） #}
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-map-marker-alt me-2"></i>城市等级分布
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <!-- Chart.js画布 -->
+                        <canvas id="cityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# 图表2：零售品类分布（环形图） #}
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shopping-cart me-2"></i>零售品类分布
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <!-- Chart.js画布 -->
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {# ====================================================================
+        图表区域第二行
+        包含一个图表：信用评分分布
+     ==================================================================== #}
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>信用评分分布
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 250px;">
+                        <!-- Chart.js画布 -->
+                        <canvas id="creditChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# ====================================================================
+        快速操作区域
+        提供快速访问系统各个功能模块的按钮
+     ==================================================================== #}
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-rocket me-2"></i>快速操作
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- 按钮网格布局：居中对齐，间距相等 -->
+                    <div class="row g-3 justify-content-center">
+
+                        {# 按钮1：智慧风控 #}
+                        <div class="col-6 col-md-2">
+                            <a href="{{ url_for('risk_control') }}"
+                               class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="fas fa-shield-alt fa-2x mb-2"></i>
+                                <span>智慧风控</span>
+                            </a>
+                        </div>
+
+                        {# 按钮2：经营分析 #}
+                        <div class="col-6 col-md-2">
+                            <a href="{{ url_for('business_analysis') }}"
+                               class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                                <span>经营分析</span>
+                            </a>
+                        </div>
+
+                        {# 按钮3：数据管理 #}
+                        <div class="col-6 col-md-2">
+                            <a href="{{ url_for('data_detail') }}"
+                               class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="fas fa-database fa-2x mb-2"></i>
+                                <span>数据管理</span>
+                            </a>
+                        </div>
+
+                        {# 按钮4：数据预测 #}
+                        <div class="col-6 col-md-2">
+                            <a href="{{ url_for('prediction') }}"
+                               class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="fas fa-robot fa-2x mb-2"></i>
+                                <span>数据预测</span>
+                            </a>
+                        </div>
+
+                        {# 按钮5：导出数据 #}
+                        <div class="col-6 col-md-2">
+                            <a href="{{ url_for('export_data') }}"
+                               class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="fas fa-download fa-2x mb-2"></i>
+                                <span>导出数据</span>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{# ====================================================================
+    额外JavaScript区域
+    用于初始化Chart.js图表
+ ==================================================================== #}
+{% block extra_js %}
+{% if charts_data %}
+<script>
+    {# ====================================================================
+        图表1：城市等级分布
+        类型：柱状图
+        显示不同城市等级的企业数量分布
+     ==================================================================== #}
+    const cityCtx = document.getElementById('cityChart').getContext('2d');
+    new Chart(cityCtx, {
+        type: 'bar',  // 柱状图
+        data: {
+            // 从charts_data获取城市分布数据
+            labels: {{ charts_data.city_distribution.keys()|list|tojson }},
+            datasets: [{
+                label: '企业数量',
+                data: {{ charts_data.city_distribution.values()|list|tojson }},
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',  // 蓝色，80%透明度
+                borderColor: 'rgba(54, 162, 235, 1)',       // 蓝色，100%透明度
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }  // 不显示图例
+            },
+            scales: {
+                y: { beginAtZero: true }  // Y轴从0开始
+            }
+        }
+    });
+
+    {# ====================================================================
+        图表2：零售品类分布
+        类型：环形图
+        显示不同零售品类的企业数量分布
+     ==================================================================== #}
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'doughnut',  // 环形图
+        data: {
+            labels: {{ charts_data.retail_category.keys()|list|tojson }},
+            datasets: [{
+                data: {{ charts_data.retail_category.values()|list|tojson }},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',   // 红色
+                    'rgba(54, 162, 235, 0.8)',  // 蓝色
+                    'rgba(255, 206, 86, 0.8)',  // 黄色
+                    'rgba(75, 192, 192, 0.8)',   // 青色
+                    'rgba(153, 102, 255, 0.8)'  // 紫色
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'  // 图例显示在右侧
+                }
+            }
+        }
+    });
+
+    {# ====================================================================
+        图表3：信用评分分布
+        类型：折线图
+        显示不同信用评分区间内的企业数量分布
+     ==================================================================== #}
+    const creditCtx = document.getElementById('creditChart').getContext('2d');
+    new Chart(creditCtx, {
+        type: 'line',  // 折线图
+        data: {
+            labels: {{ charts_data.credit_distribution.keys()|list|tojson }},
+            datasets: [{
+                label: '企业数量',
+                data: {{ charts_data.credit_distribution.values()|list|tojson }},
+                borderColor: 'rgba(75, 192, 192, 1)',      // 青色线条
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // 青色填充区域
+                fill: true,  // 填充线下区域
+                tension: 0.4  // 曲线平滑度
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

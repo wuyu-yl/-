@@ -1,0 +1,191 @@
+{# 数据管理页面 - 展示企业数据列表，支持搜索、筛选和分页 #}
+{% extends "base.html" %}
+{% block title %}数据管理 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-database me-2"></i>数据管理</h2>
+
+    <!-- 数据筛选表单 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>数据筛选</h5>
+        </div>
+        <div class="card-body">
+            <!-- 支持按搜索关键词、城市等级、零售品类筛选，可设置每页显示数量 -->
+            <form method="GET" action="{{ url_for('data_detail') }}">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">搜索</label>
+                        <input type="text" class="form-control" id="search" name="search"
+                               placeholder="企业名称或城市" value="{{ search }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="city_level" class="form-label">城市等级</label>
+                        <select class="form-select" id="city_level" name="city_level">
+                            <option value="">全部</option>
+                            {% for level in city_levels %}
+                            <option value="{{ level }}" {% if city_level == level %}selected{% endif %}>{{ level }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="retail_category" class="form-label">零售品类</label>
+                        <select class="form-select" id="retail_category" name="retail_category">
+                            <option value="">全部</option>
+                            {% for category in retail_categories %}
+                            <option value="{{ category }}" {% if retail_category == category %}selected{% endif %}>{{ category }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="per_page" class="form-label">每页显示</label>
+                        <!-- 更改每页显示数量时自动提交 -->
+                        <select class="form-select" id="per_page" name="per_page" onchange="this.form.submit()">
+                            <option value="10" {% if per_page == 10 %}selected{% endif %}>10 条</option>
+                            <option value="20" {% if per_page == 20 %}selected{% endif %}>20 条</option>
+                            <option value="50" {% if per_page == 50 %}selected{% endif %}>50 条</option>
+                            <option value="100" {% if per_page == 100 %}selected{% endif %}>100 条</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-2"></i>搜索
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 数据表格 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>企业数据列表</h5>
+            <!-- 导出数据按钮 -->
+            <a href="{{ url_for('export_data') }}" class="btn btn-success btn-sm">
+                <i class="fas fa-download me-2"></i>导出数据
+            </a>
+        </div>
+        <div class="card-body">
+            {% if data is not none %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>企业ID</th>
+                            <th>行业名称</th>
+                            <th>所在城市</th>
+                            <th>城市等级</th>
+                            <th>零售品类</th>
+                            <th>信用评分</th>
+                            <th>月均营收</th>
+                            <th>经营年限</th>
+                            <th>员工人数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 遍历DataFrame的每一行 -->
+                        {% for index, row in data.iterrows() %}
+                        <tr>
+                            <td>{{ row['企业ID'] }}</td>
+                            <td>{{ row['行业名称'] }}</td>
+                            <td>{{ row['所在城市'] }}</td>
+                            <td>{{ row['城市等级'] }}</td>
+                            <td>{{ row['零售品类'] }}</td>
+                            <td>{{ row['企业信用评分'] }}</td>
+                            <td>{{ row['月均营收（万元）'] }}</td>
+                            <td>{{ row['经营年限'] }}</td>
+                            <td>{{ row['员工人数'] }}</td>
+                            <td>
+                                <a href="{{ url_for('company_detail_page', company_id=row['企业ID']) }}" class="btn btn-sm btn-info text-white">
+                                    <i class="fas fa-eye"></i> 详情
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">数据未加载</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 分页组件 -->
+    {% if total_pages > 1 %}
+    <div class="d-flex flex-column align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
+            <small class="text-muted">第 {{ page }} / {{ total_pages }} 页</small>
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+                <!-- 上一页 -->
+                <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('data_detail', page=page-1, search=search, city_level=city_level, retail_category=retail_category, per_page=per_page) }}">
+                        {% if page > 1 %}上一页 {{ page-1 }}{% else %}上一页{% endif %}
+                    </a>
+                </li>
+                <!-- 下一页 -->
+                <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('data_detail', page=page+1, search=search, city_level=city_level, retail_category=retail_category, per_page=per_page) }}">
+                        {% if page < total_pages %}下一页 {{ page+1 }}{% else %}下一页{% endif %}
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- 页面跳转 -->
+        <div class="d-flex align-items-center gap-2">
+            <small class="text-muted">跳转到</small>
+            <input type="number" id="pageJumpInput" class="form-control form-control-sm" style="width: 80px;" min="1" max="{{ total_pages }}" placeholder="{{ page }}">
+            <small class="text-muted">页</small>
+            <button class="btn btn-sm btn-primary" onclick="jumpToPage()">跳转</button>
+        </div>
+        <!-- 记录统计 -->
+        <div class="text-center text-muted">
+            <small>显示第 {{ (page - 1) * per_page + 1 }} - {{ [page * per_page, total_records]|min }} 条，共 {{ total_records }} 条记录</small>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 分页跳转功能
+    function jumpToPage() {
+        const pageNum = parseInt(document.getElementById('pageJumpInput').value);
+        if (isNaN(pageNum) || pageNum < 1 || pageNum > {{ total_pages }}) {
+            alert('请输入有效的页码（1-{{ total_pages }}）');
+            return;
+        }
+        const search = "{{ search or '' }}";
+        const city_level = "{{ city_level or '' }}";
+        const retail_category = "{{ retail_category or '' }}";
+        const per_page = "{{ per_page }}";
+
+        // 构建URL，保留所有筛选参数
+        let url = `/data_detail?page=${pageNum}`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        if (city_level) url += `&city_level=${encodeURIComponent(city_level)}`;
+        if (retail_category) url += `&retail_category=${encodeURIComponent(retail_category)}`;
+        url += `&per_page=${per_page}`;
+
+        window.location.href = url;
+    }
+
+    // 监听回车键进行分页跳转
+    document.addEventListener('DOMContentLoaded', function() {
+        const pageInput = document.getElementById('pageJumpInput');
+        if (pageInput) {
+            pageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    jumpToPage();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

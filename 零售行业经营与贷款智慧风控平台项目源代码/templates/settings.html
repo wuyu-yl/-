@@ -1,0 +1,156 @@
+{# 系统设置页面 - 显示系统信息、功能说明、风控等级说明等 #}
+{% extends "base.html" %}
+{% block title %}系统设置 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-cog me-2"></i>系统设置</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- 系统信息卡片 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>系统信息</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">系统名称</label>
+                        <p class="form-control-static">零售行业经营与贷款智慧风控平台</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">系统版本</label>
+                        <p class="form-control-static">v1.0.0</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">框架版本</label>
+                        <p class="form-control-static">Flask 3.0.0</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">数据来源</label>
+                        <p class="form-control-static">零售行业_经营与贷款数据集_3000条.csv</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">数据记录数</label>
+                        <p class="form-control-static">3000 条</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能说明卡片 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-list-alt me-2"></i>功能说明</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>仪表板</strong> - 查看关键指标和数据概览
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>智慧风控</strong> - 风险评估和贷款通过率分析
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>经营分析</strong> - 企业经营数据和趋势分析
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>数据管理</strong> - 数据浏览、筛选和详情查看
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>用户管理</strong> - 个人资料、操作日志和数据导出
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 风控等级说明卡片 -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>风控等级说明</h5>
+                </div>
+                <div class="card-body">
+                    <!-- 风险等级表格 -->
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>信用评分范围</th>
+                                <th>风险等级</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0 - 399</td>
+                                <td><span class="badge bg-danger">高风险</span></td>
+                                <td>信用评分较低，风险较高，建议谨慎审核</td>
+                            </tr>
+                            <tr>
+                                <td>400 - 699</td>
+                                <td><span class="badge bg-warning text-dark">中风险</span></td>
+                                <td>信用评分中等，存在一定风险，需仔细评估</td>
+                            </tr>
+                            <tr>
+                                <td>700 - 1000</td>
+                                <td><span class="badge bg-success">低风险</span></td>
+                                <td>信用评分较高，风险较低，可优先考虑</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- 快速链接卡片 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-external-link-alt me-2"></i>快速链接</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-tachometer-alt me-2"></i>仪表板
+                        </a>
+                        <a href="{{ url_for('risk_control') }}" class="btn btn-outline-danger">
+                            <i class="fas fa-shield-alt me-2"></i>智慧风控
+                        </a>
+                        <a href="{{ url_for('business_analysis') }}" class="btn btn-outline-success">
+                            <i class="fas fa-chart-pie me-2"></i>经营分析
+                        </a>
+                        <a href="{{ url_for('data_detail') }}" class="btn btn-outline-info">
+                            <i class="fas fa-database me-2"></i>数据管理
+                        </a>
+                        <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-user me-2"></i>个人资料
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 联系信息卡片 -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-envelope me-2"></i>联系我们</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">如有问题或建议，请联系系统管理员。</p>
+                    <hr>
+                    <p class="mb-1">
+                        <i class="fas fa-envelope me-2"></i>
+                        <small>support@example.com</small>
+                    </p>
+                    <p>
+                        <i class="fas fa-phone me-2"></i>
+                        <small>400-XXX-XXXX</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

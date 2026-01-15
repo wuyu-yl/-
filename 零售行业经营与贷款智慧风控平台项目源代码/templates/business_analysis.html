@@ -1,0 +1,221 @@
+{# 经营分析页面 - 展示企业经营数据分析、图表和智能建议 #}
+{% extends "base.html" %}
+{% block title %}经营分析 - 零售行业经营与贷款智慧风控平台{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-chart-pie me-2"></i>经营分析</h2>
+
+    <!-- 经营统计卡片：月均营收、月均成本、月均利润、平均经营年限 -->
+    {% if charts_data %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <a href="{{ url_for('business_detail_page', business_type='avg_revenue') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm bg-primary text-white" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">月均营收</h6>
+                        <h2 class="card-title mb-0">{{ charts_data.business_stats.avg_revenue|round(2) }}</h2>
+                        <small><i class="fas fa-dollar-sign me-1"></i>万元</small>
+                        <div class="mt-2"><small class="opacity-75"><i class="fas fa-info-circle me-1"></i>点击查看详情</small></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{{ url_for('business_detail_page', business_type='avg_cost') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm bg-danger text-white" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">月均成本</h6>
+                        <h2 class="card-title mb-0">{{ charts_data.business_stats.avg_cost|round(2) }}</h2>
+                        <small><i class="fas fa-money-bill-wave me-1"></i>万元</small>
+                        <div class="mt-2"><small class="opacity-75"><i class="fas fa-info-circle me-1"></i>点击查看详情</small></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{{ url_for('business_detail_page', business_type='avg_profit') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm bg-success text-white" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">月均利润</h6>
+                        <h2 class="card-title mb-0">{{ charts_data.business_stats.avg_profit|round(2) }}</h2>
+                        <small><i class="fas fa-chart-line me-1"></i>万元</small>
+                        <div class="mt-2"><small class="opacity-75"><i class="fas fa-info-circle me-1"></i>点击查看详情</small></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{{ url_for('business_detail_page', business_type='avg_years') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm bg-info text-white" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2">平均经营年限</h6>
+                        <h2 class="card-title mb-0">{{ charts_data.business_stats.avg_years|round(1) }}</h2>
+                        <small><i class="fas fa-calendar-alt me-1"></i>年</small>
+                        <div class="mt-2"><small class="opacity-75"><i class="fas fa-info-circle me-1"></i>点击查看详情</small></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 图表区域：零售品类营收对比、员工规模分布 -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>零售品类营收对比</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <canvas id="categoryRevenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-area me-2"></i>员工规模分布</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="min-height: 300px;">
+                        <canvas id="employeeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 零售品类经营分析表格 -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-table me-2"></i>零售品类经营分析</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>零售品类</th>
+                                    <th>月均营收（万元）</th>
+                                    <th>月均成本（万元）</th>
+                                    <th>月均利润（万元）</th>
+                                    <th>月均客流量（人）</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category, stats in charts_data.category_analysis.items() %}
+                                <tr>
+                                    <td>{{ category }}</td>
+                                    <td>{{ stats['月均营收（万元）'] }}</td>
+                                    <td>{{ stats['月均成本（万元）'] }}</td>
+                                    <td>{{ (stats['月均营收（万元）'] - stats['月均成本（万元）'])|round(2) }}</td>
+                                    <td>{{ stats['月均客流量（人）']|int }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 智能经营建议 -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>智能经营建议</h5>
+                </div>
+                <div class="card-body">
+                    {% if charts_data.suggestions %}
+                    <ul class="list-group list-group-flush">
+                        {% for suggestion in charts_data.suggestions %}
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>{{ suggestion }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">暂无建议</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">数据未加载，无法显示经营分析信息</div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if charts_data %}
+<script>
+    // 零售品类营收对比图表（柱状图）
+    const categoryRevenueCtx = document.getElementById('categoryRevenueChart').getContext('2d');
+    new Chart(categoryRevenueCtx, {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for category in charts_data.category_analysis.keys() %}
+                '{{ category }}',
+                {% endfor %}
+            ],
+            datasets: [{
+                label: '月均营收（万元）',
+                data: [
+                    {% for stats in charts_data.category_analysis.values() %}
+                    {{ stats['月均营收（万元）'] }},
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // 员工规模分布图表（折线图）
+    const employeeCtx = document.getElementById('employeeChart').getContext('2d');
+    new Chart(employeeCtx, {
+        type: 'line',
+        data: {
+            labels: Object.keys({{ charts_data.employee_distribution|tojson }}).slice(0, 10),
+            datasets: [{
+                label: '企业数量',
+                data: Object.values({{ charts_data.employee_distribution|tojson }}).slice(0, 10),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

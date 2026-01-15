@@ -1,0 +1,588 @@
+/* 全局样式 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f8f9fa;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 导航栏样式 */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+/* 卡片样式 */
+.card {
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 500;
+}
+
+/* 统计卡片 */
+.card .card-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.card .card-subtitle {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+}
+
+/* 表格样式 */
+.table {
+    background-color: #fff;
+}
+
+.table thead th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+
+/* 按钮样式 */
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+}
+
+/* 页面标题 */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h2 {
+    font-weight: 600;
+    color: #212529;
+}
+
+/* 徽章样式 */
+.badge {
+    padding: 0.375em 0.75em;
+    font-weight: 500;
+}
+
+/* 进度条 */
+.progress {
+    height: 1.5rem;
+    border-radius: 0.5rem;
+}
+
+/* 分页样式 */
+.pagination {
+    margin-bottom: 0;
+}
+
+.pagination .page-link {
+    color: #0d6efd;
+    border-radius: 0.375rem;
+    margin: 0 0.25rem;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* 表单样式 */
+.form-control,
+.form-select {
+    border-radius: 0.375rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* 警告框样式 */
+.alert {
+    border-radius: 0.5rem;
+    border: none;
+}
+
+.alert-dismissible .btn-close {
+    padding: 1rem;
+}
+
+/* 页脚样式 */
+.footer {
+    border-top: 1px solid #dee2e6;
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .card .card-title {
+        font-size: 2rem;
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* 列表组样式 */
+.list-group-item {
+    border-left: 4px solid transparent;
+}
+
+.list-group-item:hover {
+    border-left-color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* 图表容器 */
+canvas {
+    max-width: 100%;
+}
+
+/* 输入组样式 */
+.input-group-text {
+    background-color: #f8f9fa;
+}
+
+/* 卡片间距 */
+.row > [class*='col-'] {
+    padding: 0.75rem;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* 表格响应式 */
+.table-responsive {
+    border-radius: 0.5rem;
+}
+
+/* 卡片阴影效果 */
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+/* 链接样式 */
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* 导航栏下拉菜单 */
+.dropdown-menu {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+}
+
+/* 加载动画 */
+.loading {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 0.25rem solid rgba(0, 0, 0, 0.1);
+    border-top-color: #0d6efd;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 图标对齐 */
+i {
+    vertical-align: middle;
+}
+
+/* ========================================
+   响应式设计 - 全面媒体查询
+   ======================================== */
+
+/* 超小屏幕 (小于 576px) - 手机竖屏 */
+@media (max-width: 575.98px) {
+    /* 导航栏 */
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .navbar-collapse {
+        background-color: #0d6efd;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .nav-link {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* 统计卡片 */
+    .card .card-title {
+        font-size: 1.5rem;
+    }
+
+    .card .card-subtitle {
+        font-size: 0.75rem;
+    }
+
+    /* 页面标题 */
+    .page-header h2 {
+        font-size: 1.25rem;
+    }
+
+    /* 按钮 */
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+
+    /* 卡片 */
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    /* 表格 */
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .table-responsive {
+        border-radius: 0;
+    }
+
+    /* 图表容器 */
+    .chart-container {
+        min-height: 200px;
+    }
+
+    /* 首页 Hero 区域 */
+    .hero-section {
+        min-height: auto !important;
+        padding: 2rem 0;
+    }
+
+    .hero-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .hero-section .display-4 {
+        font-size: 2rem !important;
+    }
+
+    /* 表单 */
+    .form-control,
+    .form-select {
+        font-size: 1rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* 登录/注册容器 */
+    .login-container,
+    .register-container {
+        min-height: auto !important;
+        padding: 1rem 0;
+    }
+
+    .login-card,
+    .register-card {
+        margin: 0;
+        border-radius: 0.5rem;
+    }
+}
+
+/* 小屏幕 (576px - 767.98px) - 手机横屏 */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    /* 统计卡片 */
+    .card .card-title {
+        font-size: 1.75rem;
+    }
+
+    /* 图表容器 */
+    .chart-container {
+        min-height: 250px;
+    }
+}
+
+/* 中等屏幕 (768px - 991.98px) - 平板 */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* 导航栏 */
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    /* 统计卡片 */
+    .card .card-title {
+        font-size: 2rem;
+    }
+
+    /* 图表容器 */
+    .chart-container {
+        min-height: 300px;
+    }
+
+    /* 首页 Hero 区域 */
+    .hero-section {
+        min-height: auto !important;
+        padding: 3rem 0;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section .display-4 {
+        font-size: 2.5rem !important;
+    }
+}
+
+/* 大屏幕 (992px - 1199.98px) - 桌面 */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    /* 统计卡片 */
+    .card .card-title {
+        font-size: 2.25rem;
+    }
+
+    /* 图表容器 */
+    .chart-container {
+        min-height: 350px;
+    }
+}
+
+/* 超大屏幕 (1200px - 1399.98px) */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+    /* 图表容器 */
+    .chart-container {
+        min-height: 380px;
+    }
+}
+
+/* 超超大屏幕 (大于等于 1400px) */
+@media (min-width: 1400px) {
+    /* 图表容器 */
+    .chart-container {
+        min-height: 400px;
+    }
+
+    /* 统计卡片 */
+    .card .card-title {
+        font-size: 2.5rem;
+    }
+}
+
+/* 通用响应式修复 */
+@media (max-width: 991.98px) {
+    /* 折叠导航栏优化 */
+    .navbar-collapse {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    /* 卡片布局 */
+    .row > [class*='col-'] {
+        padding: 0.5rem;
+    }
+}
+
+/* 横屏模式优化 */
+@media (max-height: 600px) and (orientation: landscape) {
+    .hero-section {
+        min-height: auto !important;
+        padding: 1rem 0;
+    }
+
+    .hero-section h1 {
+        font-size: 1.25rem;
+    }
+
+    .login-container,
+    .register-container {
+        min-height: auto !important;
+        padding: 0.5rem 0;
+    }
+}
+
+/* 高分辨率屏幕优化 */
+@media (min-resolution: 2dppx) {
+    /* 图标和边框更清晰 */
+    .card,
+    .btn,
+    .form-control {
+        -webkit-font-smoothing: antialiased;
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .navbar,
+    .footer,
+    .btn,
+    .no-print {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+
+    body {
+        background-color: #fff;
+    }
+}
+
+/* ========================================
+   图表响应式容器
+   ======================================== */
+.chart-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.chart-container canvas {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* ========================================
+   首页特定响应式修复
+   ======================================== */
+.hero-section {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.feature-cards {
+    overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    .feature-cards .row {
+        margin: 0;
+    }
+
+    .feature-cards .card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* ========================================
+   表格响应式增强
+   ======================================== */
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-wrapper table {
+    min-width: 600px;
+}
+
+/* ========================================
+   容器宽度控制
+   ======================================== */
+.container {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 576px) {
+    .container {
+        max-width: 540px;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1320px;
+    }
+}
